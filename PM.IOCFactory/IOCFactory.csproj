@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0836C089-6440-49A6-A40A-6D18927645D1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IOCFactory</RootNamespace>
+    <AssemblyName>IOCFactory</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Reference\IOCFactory\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Factory.cs" />
+    <Compile Include="Model\Imp\ILInstCreator\NormalInstCreator.cs" />
+    <Compile Include="Model\Imp\InstCreator\DecorateInstCreator.cs" />
+    <Compile Include="Model\Imp\InstCreator\DIInstCreator.cs" />
+    <Compile Include="Model\Imp\InstCreator\DISingletonInstCreator.cs" />
+    <Compile Include="Model\Imp\InstCreator\NormalInstCreator.cs" />
+    <Compile Include="Model\Imp\InstCreator\SingletonInstCreator.cs" />
+    <Compile Include="Model\Imp\LambdaInstCreator\NormalInstCreator.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\NormalReader.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\Reader.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\ConfigSections.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\Configuration.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\Container.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\Containers.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\LifeTime.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\LifeTimeEnum.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\Section.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\TypeAlias.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\TypeAliases.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\Unity.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\UnityType.cs" />
+    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\UnityTypes.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\InstCreatorFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IOCFactoryModel\IOCFactoryModel.csproj">
+      <Project>{c3c84d78-b872-4b73-8838-b5fdf995fc09}</Project>
+      <Name>IOCFactoryModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

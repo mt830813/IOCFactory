@@ -1,0 +1,10 @@
+﻿{
+	"Contexts":[
+		{
+			"PTypeStr":"IOCFactoryUnitTest.Animal,IOCFactoryUnitTest",
+			"CTypeStr":"IOCFactoryUnitTest.Dog,IOCFactoryUnitTest",
+			"InstTypeStr":"Singleton",
+			"Name":"FileTest"
+		}
+	]
+}

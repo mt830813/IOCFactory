@@ -1,0 +1,9 @@
+﻿{
+	"Contexts":[
+		{
+			"PTypeStr":"System.Web.Mvc.IControllerFactory,System.Web.Mvc",
+			"CTypeStr":"MVCUtil.ControllerFactory,MVCUtil",
+			"InstTypeStr":"Singleton"			
+		}
+	]
+}
