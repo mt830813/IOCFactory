@@ -4,6 +4,7 @@ using IOCFactoryModel;
 using IOCFactory.Model.Imp.InstCreator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
+using System.Configuration;
 
 namespace IOCFactoryUnitTest
 {
@@ -254,6 +255,19 @@ namespace IOCFactoryUnitTest
             {
                 Assert.Fail(ex.Message);
             }
+        }
+
+        [TestMethod]
+        [DeploymentItem("setting.xml")]
+        public void RegistFromSection()
+        {
+            var factory = Factory.GetInst();
+            factory.Clear();
+            factory.RegistFromSection("unity", IOCFactoryModel.Enum.FactoryMappingFilePattern.Unity);
+            Animal obj = factory.Get<Animal>("FileTest");
+            Animal obj2 = factory.Get<Animal>("FileTest");
+
+            Assert.AreEqual(obj, obj2);
         }
 
     }

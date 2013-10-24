@@ -28,42 +28,10 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader
         {
             try
             {
-                var ser = new XmlSerializer(typeof(Configuration));
                 var returnValue = new RegistMappingContextCollection();
                 using (var fs = File.Open(fileUrl, FileMode.Open))
                 {
-                    var config = (Configuration)ser.Deserialize(fs);
-                    var alias = config.Unity.TypeAliases.Objects;
-
-                    var types = new List<UnityType>();
-
-                    foreach (var container in config.Unity.Containers.Objects)
-                    {
-                        types.AddRange(container.Types.Objects);
-                    }
-
-
-
-                    foreach (var type in types)
-                    {
-                        var newObj = new RegistMappingContext();
-
-                        newObj.PTypeStr = GetFromAlias(alias, type.TypeStr);
-
-                        string cType = type.MapTo;
-                        if (string.IsNullOrWhiteSpace(cType))
-                        {
-                            newObj.CTypeStr = newObj.PTypeStr;
-                        }
-                        else
-                        {
-                            newObj.CTypeStr = GetFromAlias(alias, cType);
-                        }
-
-                        newObj.InstTypeStr = mapping[type.LifeTime.Type].ToString();
-
-                        returnValue.Contexts.Add(newObj);
-                    }
+                    returnValue = this.GetMappingContexts(fs);
                 }
                 return returnValue;
             }
@@ -71,6 +39,50 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader
             {
                 throw ex;
             }
+        }
+
+        public RegistMappingContextCollection GetMappingContexts(Stream stream)
+        {
+            var returnValue = new RegistMappingContextCollection(); 
+            try
+            {
+                var ser = new XmlSerializer(typeof(Unity));
+                var config = (Unity)ser.Deserialize(stream);
+                var alias = config.TypeAliases.Objects;
+
+                var types = new List<UnityType>();
+
+                foreach (var container in config.Containers.Objects)
+                {
+                    types.AddRange(container.Types.Objects);
+                }
+
+                foreach (var type in types)
+                {
+                    var newObj = new RegistMappingContext();
+
+                    newObj.PTypeStr = GetFromAlias(alias, type.TypeStr);
+
+                    string cType = type.MapTo;
+                    if (string.IsNullOrWhiteSpace(cType))
+                    {
+                        newObj.CTypeStr = newObj.PTypeStr;
+                    }
+                    else
+                    {
+                        newObj.CTypeStr = GetFromAlias(alias, cType);
+                    }
+
+                    newObj.InstTypeStr = mapping[type.LifeTime.Type].ToString();
+
+                    returnValue.Contexts.Add(newObj);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return returnValue;
         }
 
         private string GetFromAlias(IEnumerable<TypeAlias> list, string name)
@@ -86,5 +98,8 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader
                 return name;
             }
         }
+
+
+
     }
 }

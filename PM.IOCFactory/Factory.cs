@@ -9,6 +9,7 @@ using IOCFactoryModel.Enum;
 using IOCFactoryModel.Interface;
 using System.IO;
 using IOCFactory.Model.Imp.RegistContextReader;
+using System.Configuration;
 
 namespace IOCFactory
 {
@@ -58,17 +59,28 @@ namespace IOCFactory
 
                 var contexts = contextReader.GetMappingContexts(filePath);
 
-                foreach (var context in contexts.Contexts)
-                {
-                    this.Regist(context.PType, context.CType, context.InstType, context.Name);
-                }
+                this.RegistUseMappingContext(contexts);
 
             }
             else
             {
-                throw new FileNotFoundException();
+                throw new FileNotFoundException("fileNotFound", filePath);
             }
         }
+
+        public void RegistFromSection(string sectionName, FactoryMappingFilePattern pattern)
+        {
+            try
+            {
+                var obj = ConfigurationManager.GetSection(sectionName) as RegistMappingContextCollection;
+                this.RegistUseMappingContext(obj);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
 
         /// <summary>
         /// 注册
@@ -238,6 +250,8 @@ namespace IOCFactory
         }
 
 
+
+
         /// <summary>
         /// 根据基类 获取对象
         /// </summary>
@@ -293,6 +307,7 @@ namespace IOCFactory
         }
 
 
+
 #if DEBUG
         /// <summary>
         /// debug 时才可以使用。        
@@ -342,6 +357,14 @@ namespace IOCFactory
         internal object Get(Type pType, params object[] param)
         {
             return this.Get(pType, DEFAULTNAME, param);
+        }
+
+        private void RegistUseMappingContext(RegistMappingContextCollection collection)
+        {
+            foreach (var context in collection.Contexts)
+            {
+                this.Regist(context.PType, context.CType, context.InstType, context.Name);
+            }
         }
 
         private RegistObjectContext GetContext(Type pType, string name)
