@@ -13,7 +13,7 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader
 {
     internal class Reader : IRegistContextReader
     {
-        private Dictionary<LifeTimeEnum, InstType> mapping;
+        private volatile Dictionary<LifeTimeEnum, InstType> mapping;
 
         public Reader()
         {

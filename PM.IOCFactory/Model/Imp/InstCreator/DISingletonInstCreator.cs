@@ -9,6 +9,8 @@ namespace IOCFactory.Model.Imp.InstCreator
 {
     public class DISingletonInstCreator : IInstCreator
     {
+        private object _locker = new object();
+
         public IOCFactoryModel.RegistCheckResult Check(IOCFactoryModel.RegistObjectContext context)
         {
             var diCreator = InstCreatorFactory.Create(IOCFactoryModel.InstType.DI);
@@ -19,7 +21,7 @@ namespace IOCFactory.Model.Imp.InstCreator
         {
             if (context.Obj == null)
             {
-                lock (context)
+                lock (_locker)
                 {
                     var diCreator = InstCreatorFactory.Create(IOCFactoryModel.InstType.DI);
                     context.Obj = diCreator.CreateInst(context, param);

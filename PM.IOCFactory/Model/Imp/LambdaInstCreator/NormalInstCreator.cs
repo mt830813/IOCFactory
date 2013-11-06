@@ -14,6 +14,8 @@ namespace IOCFactory.Model.Imp.LambdaInstCreator
 
     public class NormalInstCreator : IInstCreator
     {
+        private object _locker = new object();
+
         internal delegate object ObjectActivator(params object[] args);
 
         private static ObjectActivator GetActivator(Type t, ConstructorInfo ctor)
@@ -58,7 +60,7 @@ namespace IOCFactory.Model.Imp.LambdaInstCreator
             return compiled;
         }
 
-        private Dictionary<int, ObjectActivator> dicCache;
+        private volatile Dictionary<int, ObjectActivator> dicCache;
 
         internal NormalInstCreator()
         {
@@ -87,7 +89,7 @@ namespace IOCFactory.Model.Imp.LambdaInstCreator
             }
             catch (KeyNotFoundException)
             {
-                lock (dicCache)
+                lock (_locker)
                 {
                     var constructor = context.ObjType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, types, null);
                     dicCache.Add(context.HashCode, NormalInstCreator.GetActivator(context.ObjType, constructor));

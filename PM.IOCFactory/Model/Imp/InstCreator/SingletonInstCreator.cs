@@ -11,6 +11,8 @@ namespace IOCFactory.Model.Imp.InstCreator
 {
     public class SingletonInstCreator : IInstCreator
     {
+        private object _locker = new object();
+
         internal SingletonInstCreator()
         {
         }
@@ -25,7 +27,7 @@ namespace IOCFactory.Model.Imp.InstCreator
         {
             if (context.Obj == null)
             {
-                lock (context)
+                lock (_locker)
                 {
                     var diCreator = InstCreatorFactory.Create(IOCFactoryModel.InstType.Normal);
                     context.Obj = diCreator.CreateInst(context, param);

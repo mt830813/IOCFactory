@@ -91,8 +91,8 @@ namespace IOCFactoryUnitTest
 
     public class DITest
     {
-        Animal animal;
-        Toy toy;
+        public Animal animal;
+        public Toy toy;
         public DITest(Animal animal, Toy toy)
         {
             this.animal = animal;
@@ -108,10 +108,11 @@ namespace IOCFactoryUnitTest
     [TestClass]
     public class IOCFactoryTest
     {
-        [ClassInitialize()]
-        public static void Init(TestContext context)
+        [TestInitialize()]
+        public void Init()
         {
             Factory factory = Factory.GetInst();
+            factory.Clear();
             factory.Regist<Animal, Cat>("cat", InstType.Normal);
             factory.Regist<Animal, Dog>("dog", InstType.Normal);
             factory.Regist<Animal, SingleTonTest>(InstType.Singleton);
@@ -122,11 +123,24 @@ namespace IOCFactoryUnitTest
 
             factory.Regist<DITest, DITest>(InstType.DISingleton);
 
+            factory.Regist<DITest, DITest>("Test", InstType.DI);
+
+
         }
         [TestCleanup]
         public void CleanUp()
         {
 
+        }
+
+        [TestMethod]
+        public void DIInstTest2()
+        {
+            Factory factory = Factory.GetInst();
+            var a = factory.Get<DITest>("Test");
+            var b = factory.Get<DITest>("Test");
+            Assert.AreEqual(a.animal.GetHashCode(), b.animal.GetHashCode());
+            Assert.AreNotEqual(a.toy.GetHashCode(), b.toy.GetHashCode());
         }
 
 
@@ -263,7 +277,7 @@ namespace IOCFactoryUnitTest
         {
             var factory = Factory.GetInst();
             factory.Clear();
-            factory.RegistFromSection("unity", IOCFactoryModel.Enum.FactoryMappingFilePattern.Unity);
+            factory.RegistFromSection("unity");
             Animal obj = factory.Get<Animal>("FileTest");
             Animal obj2 = factory.Get<Animal>("FileTest");
 

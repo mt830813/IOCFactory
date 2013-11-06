@@ -32,7 +32,7 @@ namespace IOCFactory.Model.Imp.ILInstCreator
             return (ObjectActivator)method.CreateDelegate(typeof(ObjectActivator));
         }
 
-        private Dictionary<Type, ObjectActivator> dicCache;
+        private volatile Dictionary<Type, ObjectActivator> dicCache;
 
         internal NormalInstCreator()
         {

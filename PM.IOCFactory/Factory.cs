@@ -27,13 +27,15 @@ namespace IOCFactory
 
         private const string DEFAULTNAME = "default";
 
-        private Dictionary<Type, Dictionary<string, RegistObjectContext>> dic;
+        private volatile Dictionary<Type, Dictionary<string, RegistObjectContext>> dic;
 
         private delegate T customerGetMethodDelegate<T>();
 
-        private List<CustomerGetMethodContext> customerGetMethodDic;
+        private volatile List<CustomerGetMethodContext> customerGetMethodDic;
 
         private static Factory factory;
+
+        private object _locker = new object();
 
         public static Factory GetInst()
         {
@@ -68,7 +70,7 @@ namespace IOCFactory
             }
         }
 
-        public void RegistFromSection(string sectionName, FactoryMappingFilePattern pattern)
+        public void RegistFromSection(string sectionName)
         {
             try
             {
@@ -126,7 +128,7 @@ namespace IOCFactory
         public void Regist(Type pType, Type cType, InstType instType, string name)
         {
             Dictionary<string, RegistObjectContext> cDic = null;
-            lock (dic)
+            lock (_locker)
             {
                 if (string.IsNullOrEmpty(name))
                 {
@@ -153,7 +155,7 @@ namespace IOCFactory
                 }
                 else
                 {
-                    lock (cDic)
+                    lock (_locker)
                     {
                         RegistObjectContext context = new RegistObjectContext();
 
@@ -177,13 +179,16 @@ namespace IOCFactory
         /// <param name="expectEffectRange">期待此方法的应用范围  </param>        
         public void RegistCustomerGetFunc(Func<Type, bool> checkMethod, Func<Type, object> getMethod, CustomerMethodEffectEnum expectEffectRange)
         {
-            customerGetMethodDic.Add(
-                new CustomerGetMethodContext()
-                {
-                    CheckMethod = checkMethod,
-                    GetMethod = getMethod,
-                    EffectEnum = expectEffectRange
-                });
+            lock (_locker)
+            {
+                customerGetMethodDic.Add(
+                    new CustomerGetMethodContext()
+                    {
+                        CheckMethod = checkMethod,
+                        GetMethod = getMethod,
+                        EffectEnum = expectEffectRange
+                    });
+            }
         }
 
         /// <summary>

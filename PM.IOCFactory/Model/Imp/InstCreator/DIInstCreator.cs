@@ -11,7 +11,10 @@ namespace IOCFactory.Model.Imp.InstCreator
 {
     public class DIInstCreator : IInstCreator
     {
-        private Dictionary<Type, Type[]> cache;
+        private volatile Dictionary<Type, Type[]> cache;
+
+
+        private object _locker = new object();
 
         internal DIInstCreator()
         {
@@ -62,7 +65,7 @@ namespace IOCFactory.Model.Imp.InstCreator
 
             if (!this.cache.ContainsKey(objType))
             {
-                lock (this.cache)
+                lock (_locker)
                 {
                     Type[] list;
 
