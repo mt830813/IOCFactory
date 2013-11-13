@@ -5,6 +5,7 @@ using IOCFactory.Model.Imp.InstCreator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Configuration;
+using System.Collections.Generic;
 
 namespace IOCFactoryUnitTest
 {
@@ -282,6 +283,27 @@ namespace IOCFactoryUnitTest
             Animal obj2 = factory.Get<Animal>("FileTest");
 
             Assert.AreEqual(obj, obj2);
+        }
+
+        [TestMethod]
+        public void ObjectPoolTest()
+        {
+            var factory = Factory.GetInst();
+            int poolCount = 2;
+            factory.RegistObjectPool<Animal, Cat>("objectPool", poolCount, null);
+
+            List<int> list = new List<int>();
+            for (var i = 0; i < 100; i++)
+            {
+                var obj = factory.Get<Animal>("objectPool");
+                if (!list.Contains(obj.GetHashCode()))
+                {
+                    list.Add(obj.GetHashCode());
+                    GC.SuppressFinalize(obj);
+                    GC.WaitForFullGCComplete();
+                }
+            }
+            Assert.AreEqual(poolCount, list.Count);
         }
 
     }

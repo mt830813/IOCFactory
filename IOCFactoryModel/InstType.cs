@@ -12,6 +12,7 @@ namespace IOCFactoryModel
         Singleton,
         DI,
         Decorate,
-        DISingleton
+        DISingleton,
+        ObjectPool
     }
 }

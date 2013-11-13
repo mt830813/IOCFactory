@@ -36,6 +36,7 @@ namespace IOCFactory
         private static Factory factory;
 
         private object _locker = new object();
+        private InstType[] NotAllowNormalRegistType = { InstType.Decorate, InstType.ObjectPool };
 
         public static Factory GetInst()
         {
@@ -144,9 +145,9 @@ namespace IOCFactory
                     cDic = dic[pType];
                 }
 
-                if (instType == InstType.Decorate)
+                if (NotAllowNormalRegistType.Contains(instType))
                 {
-                    throw new Exception(string.Format("Decorate Inst Not Allow Use Normal Regist Method To Regist"));
+                    throw new Exception(string.Format("{0} Inst Not Allow Use Normal Regist Method To Regist", Enum.GetName(typeof(InstType), instType)));
                 }
 
                 if (cDic.ContainsKey(name))
@@ -254,7 +255,29 @@ namespace IOCFactory
             chainList.Add(typeof(Q));
         }
 
+        public void RegistObjectPool<T, Q>(int maxPoolCount, Action<Q> action) where Q : T
+        {
+            RegistObjectPool<T, Q>(DEFAULTNAME, maxPoolCount, action);
+        }
 
+        public void RegistObjectPool<T, Q>(string name, int maxPoolCount, Action<Q> action) where Q : T
+        {
+            Regist<T, Q>(name, InstType.Normal);
+
+            var context = GetContext(typeof(T), name);
+
+            SetContextInstType(InstType.ObjectPool, context);
+
+            context.Params.Add(ContextParamNameEnum.POOL_MAXCOUNT, maxPoolCount);
+
+            Action<object> tempAc = new Action<object>(o => { });
+            if (action != null)
+            {
+                tempAc = new Action<object>(o => action((Q)o));
+            }
+
+            context.Params.Add(ContextParamNameEnum.POOL_INITACTION, tempAc);
+        }
 
 
         /// <summary>

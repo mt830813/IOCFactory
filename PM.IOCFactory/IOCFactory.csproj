@@ -57,6 +57,7 @@
     <Compile Include="Model\Imp\InstCreator\DIInstCreator.cs" />
     <Compile Include="Model\Imp\InstCreator\DISingletonInstCreator.cs" />
     <Compile Include="Model\Imp\InstCreator\NormalInstCreator.cs" />
+    <Compile Include="Model\Imp\InstCreator\ObjectPoolInstCreator.cs" />
     <Compile Include="Model\Imp\InstCreator\SingletonInstCreator.cs" />
     <Compile Include="Model\Imp\LambdaInstCreator\NormalInstCreator.cs" />
     <Compile Include="Model\Imp\RegistContextReader\NormalReader.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\Unity.cs" />
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\UnityType.cs" />
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\UnityTypes.cs" />
+    <Compile Include="Model\ObjectPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\InstCreatorFactory.cs" />
     <Compile Include="Util\IOCFactoryUnitySectionHandler.cs" />

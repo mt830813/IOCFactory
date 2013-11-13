@@ -58,6 +58,7 @@ namespace IOCFactory.Util
             dic.Add(InstType.DI, new DIInstCreator());
             dic.Add(InstType.Decorate, new DecorateInstCreator());
             dic.Add(InstType.DISingleton, new DISingletonInstCreator());
+            dic.Add(InstType.ObjectPool, new ObjectPoolInstCreator());
 
             readerDic.Add(FactoryMappingFilePattern.Normal, new NormalReader());
             readerDic.Add(FactoryMappingFilePattern.Unity, new IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader.Reader());

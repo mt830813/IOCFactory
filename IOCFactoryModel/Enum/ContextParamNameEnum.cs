@@ -9,6 +9,8 @@ namespace IOCFactoryModel.Enum
     public enum ContextParamNameEnum
     {
         INSTCHAIN,
-        TODECORATENAME
+        TODECORATENAME,
+        POOL_MAXCOUNT,
+        POOL_INITACTION
     }
 }
