@@ -56,23 +56,22 @@ namespace IOCFactory.Model.Imp.InstCreator
 
         public object CreateInst(RegistObjectContext context, params object[] param)
         {
+            var list = context.Params[ContextParamNameEnum.DECORATE_CONTEXTCHAIN] as List<RegistObjectContext>;
+
             object returnValue = null;
-            if (!context.Params.ContainsKey(ContextParamNameEnum.TODECORATENAME))
-            {
-                throw new Exception("Error InstType");
-            }
-            Factory factory = Factory.GetInst();
-            var toDecorateName = context.Params[ContextParamNameEnum.TODECORATENAME].ToString();
-            var toDecorateObj = factory.Get(context.PType, toDecorateName);
-            var instList = (List<Type>)context.Params[ContextParamNameEnum.INSTCHAIN];
 
-            var diCreator = InstCreatorFactory.Create(IOCFactoryModel.InstType.Normal);
-
-            foreach (var type in instList)
+            foreach (var obj in list)
             {
-                toDecorateObj = diCreator.CreateInst(new RegistObjectContext() { ObjType = type }, toDecorateObj);
+                if (returnValue != null)
+                {
+                    returnValue = obj.InstCreator.CreateInst(obj, returnValue);
+                }
+                else
+                {
+                    returnValue = obj.InstCreator.CreateInst(obj);
+                }
             }
-            returnValue = toDecorateObj;
+
             return returnValue;
         }
     }

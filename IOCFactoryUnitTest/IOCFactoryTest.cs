@@ -112,19 +112,28 @@ namespace IOCFactoryUnitTest
         [TestInitialize()]
         public void Init()
         {
-            Factory factory = Factory.GetInst();
-            factory.Clear();
-            factory.Regist<Animal, Cat>("cat", InstType.Normal);
-            factory.Regist<Animal, Dog>("dog", InstType.Normal);
-            factory.Regist<Animal, SingleTonTest>(InstType.Singleton);
-            factory.RegistDecorate<Animal, CatDog>("catDog", "cat");
-            factory.RegistDecorate<Animal, MachineCatDog>("catDog", "cat");
+            try
+            {
+                Factory factory = Factory.GetInst();
+                factory.Clear();
+                factory.Regist<Animal, Cat>("cat", InstType.Normal);
+                factory.Regist<Animal, Dog>("dog", InstType.Normal);
+                factory.Regist<Animal, SingleTonTest>(InstType.Singleton);
 
-            factory.Regist<Toy, Ball>(InstType.Normal);
+                factory.RegistDecorate<Animal, Cat>("catDog", InstType.Normal);
+                factory.RegistDecorate<Animal, CatDog>("catDog", InstType.Normal);
+                factory.RegistDecorate<Animal, MachineCatDog>("catDog", InstType.Normal);
 
-            factory.Regist<DITest, DITest>(InstType.DISingleton);
+                factory.Regist<Toy, Ball>(InstType.Normal);
 
-            factory.Regist<DITest, DITest>("Test", InstType.DI);
+                factory.Regist<DITest, DITest>(InstType.DISingleton);
+
+                factory.Regist<DITest, DITest>("Test", InstType.DI);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
 
         }
@@ -179,17 +188,25 @@ namespace IOCFactoryUnitTest
         [TestMethod]
         public void DIInstTest()
         {
-            Factory factory = Factory.GetInst();
+            try
+            {
 
-            var ani = factory.Get<Animal>();
-            var toy = factory.Get<Toy>();
+                Factory factory = Factory.GetInst();
 
-            var result = factory.Get<DITest>();
-            var result2 = factory.Get<DITest>();
-            var exp = new DITest(ani, toy);
+                var ani = factory.Get<Animal>();
+                var toy = factory.Get<Toy>();
 
-            Assert.AreEqual(exp.Test(), result.Test());
-            Assert.AreEqual(result, result2);
+                var result = factory.Get<DITest>();
+                var result2 = factory.Get<DITest>();
+                var exp = new DITest(ani, toy);
+
+                Assert.AreEqual(exp.Test(), result.Test());
+                Assert.AreEqual(result, result2);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         [TestMethod]

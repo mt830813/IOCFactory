@@ -89,10 +89,15 @@ namespace IOCFactory.Model.Imp.LambdaInstCreator
             }
             catch (KeyNotFoundException)
             {
-                lock (_locker)
+
+                try
                 {
                     var constructor = context.ObjType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, types, null);
                     dicCache.Add(context.HashCode, NormalInstCreator.GetActivator(context.ObjType, constructor));
+                    objectCreater = dicCache[context.HashCode];
+                }
+                catch (ArgumentException ex)
+                {
                     objectCreater = dicCache[context.HashCode];
                 }
             }

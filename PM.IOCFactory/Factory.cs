@@ -38,6 +38,8 @@ namespace IOCFactory
         private object _locker = new object();
         private InstType[] NotAllowNormalRegistType = { InstType.Decorate, InstType.ObjectPool };
 
+        private InstType[] NotAllowDecorateRegistType = { InstType.Decorate, InstType.DI, InstType.DISingleton };
+
         public static Factory GetInst()
         {
             if (factory == null)
@@ -128,46 +130,11 @@ namespace IOCFactory
         /// <param name="name"></param>
         public void Regist(Type pType, Type cType, InstType instType, string name)
         {
-            Dictionary<string, RegistObjectContext> cDic = null;
-            lock (_locker)
+            if (NotAllowNormalRegistType.Contains(instType))
             {
-                if (string.IsNullOrEmpty(name))
-                {
-                    name = DEFAULTNAME;
-                }
-                try
-                {
-                    cDic = dic[pType];
-                }
-                catch (KeyNotFoundException)
-                {
-                    dic.Add(pType, new Dictionary<string, RegistObjectContext>());
-                    cDic = dic[pType];
-                }
-
-                if (NotAllowNormalRegistType.Contains(instType))
-                {
-                    throw new Exception(string.Format("{0} Inst Not Allow Use Normal Regist Method To Regist", Enum.GetName(typeof(InstType), instType)));
-                }
-
-                if (cDic.ContainsKey(name))
-                {
-                    throw new Exception(string.Format("Regist Type '{0}' Must be Unique", name));
-                }
-                else
-                {
-                    lock (_locker)
-                    {
-                        RegistObjectContext context = new RegistObjectContext();
-
-                        context.ObjType = cType;
-                        context.PType = pType;
-
-                        this.SetContextInstType(instType, context);
-                        cDic.Add(name, context);
-                    }
-                }
+                throw new Exception(string.Format("{0} Inst Not Allow Use Normal Regist Method To Regist", Enum.GetName(typeof(InstType), instType)));
             }
+            this.RegistContext(pType, cType, instType, name);
         }
 
         /// <summary>
@@ -223,9 +190,9 @@ namespace IOCFactory
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="Q"></typeparam>
         /// <param name="name">注册后的关键字</param>
-        public void RegistDecorate<T, Q>(string name) where Q : T
+        public void RegistDecorate<T, Q>(InstType instType) where Q : T
         {
-            RegistDecorate<T, Q>(name, DEFAULTNAME);
+            RegistDecorate<T, Q>(DEFAULTNAME, instType);
         }
 
 
@@ -234,25 +201,40 @@ namespace IOCFactory
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="Q"></typeparam>
-        /// <param name="name">注册后的关键字</param>
-        /// <param name="toDecorateName">要装饰的已注册的对象</param>
-        public void RegistDecorate<T, Q>(string name, string toDecorateName) where Q : T
+        /// <param name="name">要装饰的已注册的对象</param>
+        /// <param name="instType">对象生成类型</param>
+        public void RegistDecorate<T, Q>(string name, InstType instType) where Q : T
         {
-            if (!IsRegist<T>(name))
-            {
-                Regist<T, Q>(name, InstType.Normal);
-            }
-            var context = GetContext(typeof(T), name);
+            RegistObjectContext context;
+            RegistObjectContext dContext;
 
-            this.SetContextInstType(InstType.Decorate, context);
-
-            if (!context.Params.ContainsKey(ContextParamNameEnum.INSTCHAIN))
+            if (NotAllowDecorateRegistType.Contains(instType))
             {
-                context.Params.Add(ContextParamNameEnum.INSTCHAIN, new List<Type>());
-                context.Params.Add(ContextParamNameEnum.TODECORATENAME, toDecorateName);
+                throw new Exception(string.Format("{0} Inst Not Allow Use Decorate Regist Method To Regist", Enum.GetName(typeof(InstType), instType)));
             }
-            List<Type> chainList = (List<Type>)context.Params[ContextParamNameEnum.INSTCHAIN];
-            chainList.Add(typeof(Q));
+
+            try
+            {
+                dContext = GetContext(typeof(T), name, false);
+
+                if (dContext.InstType != InstType.Decorate)
+                {
+                    var tContext = CreateContext(typeof(T), typeof(Q), InstType.Decorate);
+                    tContext.Params.Add(ContextParamNameEnum.DECORATE_CONTEXTCHAIN, new List<RegistObjectContext>() { dContext });
+                    SetContext(typeof(T), tContext, name, true);
+                    dContext = tContext;
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                Regist<T, Q>(name, instType);
+                return;
+            }
+            context = CreateContext(typeof(T), typeof(Q), instType);
+
+            var list = dContext.Params[ContextParamNameEnum.DECORATE_CONTEXTCHAIN] as List<RegistObjectContext>;
+
+            list.Add(context);
         }
 
         public void RegistObjectPool<T, Q>(int maxPoolCount, Action<Q> action) where Q : T
@@ -262,11 +244,7 @@ namespace IOCFactory
 
         public void RegistObjectPool<T, Q>(string name, int maxPoolCount, Action<Q> action) where Q : T
         {
-            Regist<T, Q>(name, InstType.Normal);
-
-            var context = GetContext(typeof(T), name);
-
-            SetContextInstType(InstType.ObjectPool, context);
+            var context = RegistContext(typeof(T), typeof(Q), InstType.ObjectPool, name);
 
             context.Params.Add(ContextParamNameEnum.POOL_MAXCOUNT, maxPoolCount);
 
@@ -300,6 +278,9 @@ namespace IOCFactory
         /// <returns></returns>
         public T Get<T>(string name, params object[] param)
         {
+#if DEBUG
+            return (T)this.Get(typeof(T), name, param);
+#else
             try
             {
                 return (T)this.Get(typeof(T), name, param);
@@ -308,6 +289,8 @@ namespace IOCFactory
             {
                 throw ex;
             }
+#endif
+
         }
 
 
@@ -342,9 +325,12 @@ namespace IOCFactory
         /// </summary>
         public void Clear()
         {
-            this.dic = new Dictionary<Type, Dictionary<string, RegistObjectContext>>();
+            lock (this._locker)
+            {
+                this.dic = new Dictionary<Type, Dictionary<string, RegistObjectContext>>();
 
-            this.customerGetMethodDic = new List<CustomerGetMethodContext>();
+                this.customerGetMethodDic = new List<CustomerGetMethodContext>();
+            }
         }
 #endif
 
@@ -368,10 +354,13 @@ namespace IOCFactory
                 var creator = context.InstCreator;
                 return creator.CreateInst(context, param);
             }
+#if DEBUG
+#else
             catch (Exception ex)
             {
                 throw ex;
             }
+#endif
             finally
             {
                 if (toRemoveContext != null)
@@ -381,6 +370,23 @@ namespace IOCFactory
             }
         }
 
+        private RegistObjectContext CreateContext(Type pType, Type cType, InstType instType)
+        {
+            RegistObjectContext context = new RegistObjectContext();
+
+            context.ObjType = cType;
+            context.PType = pType;
+
+            this.SetContextInstType(instType, context);
+            return context;
+        }
+
+        private RegistObjectContext RegistContext(Type pType, Type cType, InstType instType, string name)
+        {
+            var context = this.CreateContext(pType, cType, instType);
+            SetContext(pType, context, name, false);
+            return context;
+        }
 
         internal object Get(Type pType, params object[] param)
         {
@@ -395,45 +401,107 @@ namespace IOCFactory
             }
         }
 
-        private RegistObjectContext GetContext(Type pType, string name)
+        private RegistObjectContext GetContext(Type pType, string name, bool isUseDefaultName = true)
         {
+            Dictionary<string, RegistObjectContext> cDic;
             try
             {
-                var cDic = dic[pType];
-                RegistObjectContext context;
+                cDic = dic[pType];
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new Exception(string.Format("Not contains type {0}", pType.Name));
+            }
+            RegistObjectContext context;
+            try
+            {
+                context = cDic[name];
+            }
+            catch (KeyNotFoundException)
+            {
                 try
                 {
-                    context = cDic[name];
-                }
-                catch (KeyNotFoundException)
-                {
-                    try
+                    if (isUseDefaultName)
                     {
                         context = cDic[DEFAULTNAME];
                     }
-                    catch (KeyNotFoundException)
+                    else
                     {
-                        throw new Exception(string.Format("Didn't have any inst regist as name {0}", name));
+                        throw new KeyNotFoundException();
                     }
                 }
-                return context;
+                catch (KeyNotFoundException)
+                {
+                    throw new KeyNotFoundException(string.Format("Didn't have any inst regist as name {0}", name));
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
-            catch (KeyNotFoundException ex)
+            return context;
+        }
+
+        private void SetContext(Type pType, RegistObjectContext context, string name, bool allowOverWrite)
+        {
+            try
+            {
+                lock (_locker)
+                {
+                    Dictionary<string, RegistObjectContext> cDic = null;
+                    try
+                    {
+                        cDic = dic[pType];
+                    }
+                    catch (KeyNotFoundException)
+                    {
+
+                        dic.Add(pType, new Dictionary<string, RegistObjectContext>());
+                        cDic = dic[pType];
+                    }
+
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        name = DEFAULTNAME;
+                    }
+
+                    try
+                    {
+                        cDic.Add(name, context);
+                    }
+                    catch (ArgumentException)
+                    {
+                        if (allowOverWrite)
+                        {
+                            cDic[name] = context;
+                        }
+                        else
+                        {
+                            throw new Exception(string.Format("Regist Type '{0}' Must be Unique", name));
+                        }
+
+                    }
+                }
+
+            }
+            catch (KeyNotFoundException)
             {
                 throw new Exception(string.Format("Not contains type {0}", pType.Name));
             }
         }
 
-        private void SetContextInstType(InstType instType, RegistObjectContext context)
+        private void SetContextInstType(InstType instType, RegistObjectContext context, bool isCheck = true)
         {
             context.InstType = instType;
             context.InstCreator = InstCreatorFactory.Create(instType);
-            var result = context.InstCreator.Check(context);
-            if (result.IsPass == false)
+            if (isCheck)
             {
-                throw new Exception("regist error:" + result.Message);
+                var result = context.InstCreator.Check(context);
+                if (result.IsPass == false)
+                {
+                    throw new Exception("regist error:" + result.Message);
+                }
             }
         }
-
     }
 }

@@ -69,7 +69,7 @@
     </ProjectReference>
     <ProjectReference Include="..\PM.IOCFactory\IOCFactory.csproj">
       <Project>{0836C089-6440-49A6-A40A-6D18927645D1}</Project>
-      <Name>IOCFactory</Name>
+      <Name>IOCFactory %28Lib\IOCFactory\IOCFactory%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
