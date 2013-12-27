@@ -317,6 +317,15 @@ namespace IOCFactory
             return returnValue;
         }
 
+        public T InjectionCreate<T>(params object[] param)
+        {
+            string guid = Guid.NewGuid().ToString();
+            this.Regist<T, T>(InstType.DI);
+            T returnValue = this.Get<T>(param);
+            this.Remove<T>();
+            return returnValue;
+        }
+
 
 
 #if DEBUG
@@ -398,6 +407,19 @@ namespace IOCFactory
             foreach (var context in collection.Contexts)
             {
                 this.Regist(context.PType, context.CType, context.InstType, context.Name);
+            }
+        }
+
+
+        private void Remove<T>()
+        {
+            try
+            {
+                this.dic.Remove(typeof(T));
+            }
+            catch (ArgumentNullException)
+            {
+
             }
         }
 

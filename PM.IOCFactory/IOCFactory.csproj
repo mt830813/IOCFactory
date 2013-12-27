@@ -78,7 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IOCFactoryModel\IOCFactoryModel.csproj">
-      <Project>{c3c84d78-b872-4b73-8838-b5fdf995fc09}</Project>
+      <Project>{C3C84D78-B872-4B73-8838-B5FDF995FC09}</Project>
       <Name>IOCFactoryModel</Name>
     </ProjectReference>
   </ItemGroup>

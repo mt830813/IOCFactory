@@ -22,7 +22,7 @@ namespace IOCFactory.Model.Imp.InstCreator
         public RegistCheckResult Check(RegistObjectContext context)
         {
             var type = context.ObjType;
-            var constructs = type.GetConstructors();
+            var constructs = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             var returnValue = new RegistCheckResult();
             returnValue.IsPass = false;
             if (constructs.Length != 1)

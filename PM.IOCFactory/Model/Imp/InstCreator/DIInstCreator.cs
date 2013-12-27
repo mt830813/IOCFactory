@@ -34,7 +34,7 @@ namespace IOCFactory.Model.Imp.InstCreator
 
             var objType = context.ObjType;
 
-            ConstructorInfo[] constructs = objType.GetConstructors();
+            ConstructorInfo[] constructs = objType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (constructs.Length != 1)
             {
                 returnValue.Message = string.Format("regist as DI Inst must and only have 1 construct method");
@@ -69,7 +69,7 @@ namespace IOCFactory.Model.Imp.InstCreator
                 {
                     Type[] list;
 
-                    ConstructorInfo[] constructs = objType.GetConstructors();
+                    ConstructorInfo[] constructs = objType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                     var construct = constructs[0];
                     var pArray = construct.GetParameters();
                     list = new Type[pArray.Length];
