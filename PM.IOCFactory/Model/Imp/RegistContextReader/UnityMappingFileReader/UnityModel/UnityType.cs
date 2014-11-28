@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader.UnityModel
 {
-    [XmlRoot(ElementName = "type", Namespace = "")]
+    [XmlRoot(ElementName = "register", Namespace = "")]
     public class UnityType
     {
         public UnityType()

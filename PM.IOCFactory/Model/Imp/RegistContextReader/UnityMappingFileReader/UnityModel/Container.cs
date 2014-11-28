@@ -13,7 +13,7 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader.UnityM
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }
 
-        [XmlElement(ElementName = "types")]
-        public UnityTypes Types { get; set; }
+        [XmlElement(ElementName = "register")]
+        public UnityType[] Types { get; set; }
     }
 }

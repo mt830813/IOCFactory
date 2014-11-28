@@ -63,11 +63,8 @@
     <Compile Include="Model\Imp\RegistContextReader\NormalReader.cs" />
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\Reader.cs" />
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\Container.cs" />
-    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\Containers.cs" />
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\LifeTime.cs" />
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\LifeTimeEnum.cs" />
-    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\TypeAlias.cs" />
-    <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\TypeAliases.cs" />
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\Unity.cs" />
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\UnityType.cs" />
     <Compile Include="Model\Imp\RegistContextReader\UnityMappingFileReader\UnityModel\UnityTypes.cs" />

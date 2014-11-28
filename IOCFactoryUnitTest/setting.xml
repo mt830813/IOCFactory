@@ -1,16 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <unity>
-  <typeAliases>
-    <typeAlias alias="Interface" type="IOCFactoryUnitTest.Animal,IOCFactoryUnitTest"/>
-    <typeAlias alias="Object" type="IOCFactoryUnitTest.Dog,IOCFactoryUnitTest"/>
-  </typeAliases>
-  <containers>
-    <container name="containerOne">
-      <types>
-        <type type="Interface" mapTo="Object">
-          <lifetime type="singleton"/>
-        </type>
-      </types>
-    </container>
-  </containers>
+  <container name="containerOne">
+    <register type="IOCFactoryUnitTest.Animal,IOCFactoryUnitTest" mapTo="IOCFactoryUnitTest.Dog,IOCFactoryUnitTest">
+      <lifetime type="singleton"/>
+    </register>
+  </container>
 </unity>

@@ -30,7 +30,11 @@ namespace IOCFactory.Model.Imp.InstCreator
                 lock (_locker)
                 {
                     var diCreator = InstCreatorFactory.Create(IOCFactoryModel.InstType.Normal);
-                    context.Obj = diCreator.CreateInst(context, param);
+                    var obj = diCreator.CreateInst(context, param);
+                    if (context.Obj == null)
+                    {
+                        context.Obj = obj;
+                    }
                 }
             }
             return context.Obj;

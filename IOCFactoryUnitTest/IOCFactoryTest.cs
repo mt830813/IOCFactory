@@ -188,11 +188,10 @@ namespace IOCFactoryUnitTest
         [TestMethod]
         public void DIInstTest()
         {
+            Factory factory = Factory.GetInst();
+
             try
             {
-
-                Factory factory = Factory.GetInst();
-
                 var ani = factory.Get<Animal>();
                 var toy = factory.Get<Toy>();
 
@@ -214,17 +213,30 @@ namespace IOCFactoryUnitTest
         {
             try
             {
-                int count = 100;
-
-                Action func = () => { for (var i = 0; i < count; i++) { DIInstTest(); } };
-
+                int count = 1000;
+                int threadCount=50;
+                List<bool> finishArray = new List<bool>();                
+                Action func = () =>
+                {
+                    for (var i = 0; i < count; i++)
+                    {                        
+                        DIInstTest();
+                    }
+                    finishArray.Add(true);
+                };
+                for (var j = 0; j < threadCount; j++)
+                {
+                    new Thread(new ThreadStart(func)).Start();
+                }
                 var a = new Thread(new ThreadStart(func));
                 var b = new Thread(new ThreadStart(func));
                 var c = new Thread(new ThreadStart(func));
 
-                a.Start();
-                b.Start();
-                c.Start();
+
+                while (finishArray.Count==threadCount)
+                {
+                    Thread.Sleep(100);
+                }
             }
             catch (Exception ex)
             {

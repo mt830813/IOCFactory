@@ -43,25 +43,24 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader
 
         public RegistMappingContextCollection GetMappingContexts(Stream stream)
         {
-            var returnValue = new RegistMappingContextCollection(); 
+            var returnValue = new RegistMappingContextCollection();
             try
             {
                 var ser = new XmlSerializer(typeof(Unity));
                 var config = (Unity)ser.Deserialize(stream);
-                var alias = config.TypeAliases.Objects;
 
                 var types = new List<UnityType>();
 
-                foreach (var container in config.Containers.Objects)
+                foreach (var container in config.Containers)
                 {
-                    types.AddRange(container.Types.Objects);
+                    types.AddRange(container.Types);
                 }
 
                 foreach (var type in types)
                 {
                     var newObj = new RegistMappingContext();
 
-                    newObj.PTypeStr = GetFromAlias(alias, type.TypeStr);
+                    newObj.PTypeStr = type.TypeStr;
 
                     string cType = type.MapTo;
                     if (string.IsNullOrWhiteSpace(cType))
@@ -70,7 +69,7 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader
                     }
                     else
                     {
-                        newObj.CTypeStr = GetFromAlias(alias, cType);
+                        newObj.CTypeStr = cType;
                     }
 
                     newObj.InstTypeStr = mapping[type.LifeTime.Type].ToString();
@@ -84,22 +83,6 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader
             }
             return returnValue;
         }
-
-        private string GetFromAlias(IEnumerable<TypeAlias> list, string name)
-        {
-            var obj = list.FirstOrDefault(p => p.Alias == name);
-
-            if (obj != null)
-            {
-                return obj.TypeStr;
-            }
-            else
-            {
-                return name;
-            }
-        }
-
-
 
     }
 }
