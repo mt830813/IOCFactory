@@ -14,7 +14,7 @@ DI Instance Result:
 IOCFactory 2.113s
 Unity 11.075s
 
-Currently Support Create Serveral Type of Instance which are list blow.
+Currently Support Create Serveral Type of Instance which are list below.
 1 Normal
 2 Singleton
 3 Decorate
