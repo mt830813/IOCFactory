@@ -406,7 +406,21 @@ namespace IOCFactory
         {
             foreach (var context in collection.Contexts)
             {
-                this.Regist(context.PType, context.CType, context.InstType, context.Name);
+                if (context.PType != null && context.InstType != null)
+                {
+                    this.Regist(context.PType, context.CType, context.InstType, context.Name);
+                }
+                else
+                {
+                    if (context.PType == null)
+                    {
+                        throw new Exception(String.Format("无法找到类型:{0}", context.PTypeStr));
+                    }
+                    if (context.InstType == null)
+                    {
+                        throw new Exception(string.Format("无法找到类型:{0}", context.CTypeStr));
+                    }
+                }
             }
         }
 
