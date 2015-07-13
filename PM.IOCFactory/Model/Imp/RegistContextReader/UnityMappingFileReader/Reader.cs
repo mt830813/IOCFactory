@@ -49,10 +49,13 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader
                 var ser = new XmlSerializer(typeof(Unity));
                 var config = (Unity)ser.Deserialize(stream);
 
+
+
                 var types = new List<UnityType>();
 
                 foreach (var container in config.Containers)
                 {
+
                     types.AddRange(container.Types);
                 }
 
@@ -73,6 +76,8 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader
                     }
 
                     newObj.InstTypeStr = mapping[type.LifeTime.Type].ToString();
+
+                    newObj.Name = type.Name;
 
                     returnValue.Contexts.Add(newObj);
                 }
