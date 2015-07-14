@@ -24,7 +24,7 @@ namespace IOCFactory.Model.Imp.RegistContextReader.UnityMappingFileReader.UnityM
         [XmlElement(ElementName = "lifetime")]
         public LifeTime LifeTime { get; set; }
 
-        [XmlElement(ElementName = "name")]
+        [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }
     }
 }
