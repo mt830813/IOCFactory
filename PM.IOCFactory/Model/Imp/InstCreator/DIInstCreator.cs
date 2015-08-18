@@ -21,13 +21,8 @@ namespace IOCFactory.Model.Imp.InstCreator
             cache = new Dictionary<Type, Type[]>();
         }
 
-        private bool HasCycle(RegistObjectContext context)
-        {
 
-            return false;
-        }
-
-        public RegistCheckResult Check(IOCFactoryModel.RegistObjectContext context)
+        public RegistCheckResult Check(RegistObjectContext context)
         {
             var returnValue = new RegistCheckResult();
             returnValue.IsPass = false;
@@ -37,7 +32,7 @@ namespace IOCFactory.Model.Imp.InstCreator
             ConstructorInfo[] constructs = objType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (constructs.Length != 1)
             {
-                returnValue.Message = string.Format("regist as DI Inst must and only have 1 construct method");
+                returnValue.Message = "regist as DI Inst must and only have 1 construct method";
                 return returnValue;
             }
 
@@ -49,7 +44,7 @@ namespace IOCFactory.Model.Imp.InstCreator
             {
                 if (!p.ParameterType.IsInterface)
                 {
-                    returnValue.Message = string.Format("regsit as DI Inst the construct method's paramters must be interface type");
+                    returnValue.Message = "regsit as DI Inst the construct method\'s paramters must be interface type";
                     return returnValue;
                 }
             }
@@ -62,11 +57,11 @@ namespace IOCFactory.Model.Imp.InstCreator
             var objType = context.ObjType;
 
             var index = 0;
-
-            if (!this.cache.ContainsKey(objType))
+            lock (_locker)
             {
-                lock (_locker)
+                if (!this.cache.ContainsKey(objType))
                 {
+
                     Type[] list;
 
                     ConstructorInfo[] constructs = objType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -95,7 +90,7 @@ namespace IOCFactory.Model.Imp.InstCreator
                 index++;
             }
 
-            var diCreator = InstCreatorFactory.Create(IOCFactoryModel.InstType.Normal);
+            var diCreator = InstCreatorFactory.Create(InstType.Normal);
 
             var returnValue = diCreator.CreateInst(context, inPArray);
             return returnValue;
